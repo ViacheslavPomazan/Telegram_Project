@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 # 1. Дані авторизації (з my.telegram.org)
 API_ID = 1111111  # Замініть на ваш цілочисельний API ID
-API_HASH = '<hash>'
+API_HASH = '<your hash>'
 
 # 2. Налаштування відстеження
 # Можна вказати @username (рядок) або ID каналу (число int)
