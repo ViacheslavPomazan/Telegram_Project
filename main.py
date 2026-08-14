@@ -1,12 +1,13 @@
 from telethon import TelegramClient, events
 import winsound
-import re
+# import re
 import time
 from datetime import datetime, timedelta
 from loading import save_to_jsonl
+from search import *
 
 # 1. Дані авторизації (з my.telegram.org)
-API_ID = 1111111  # Замініть на ваш цілочисельний API ID
+API_ID = 11111111  # Замініть на ваш цілочисельний API ID
 API_HASH = '<your hash>'
 
 # 2. Налаштування відстеження
@@ -19,58 +20,17 @@ KEYWORDS = ['каб', 'сум', 'баліст']
 # Глобальна змінна для збереження часу останньої загрози
 last_danger_time = None
 
-# 1.синхронна функція пошуку
-
-
-def not_sumy(text):
-    if not text:
-        return False
-    # pattern = r'не\s+на\s+Сум(?:и|ах|ам)?'
-    pattern = r'\bне\s+(?:на\s+)?Сум(?:и|ах|ам)?\b'
-    condition = bool(re.search(pattern, text, re.I))
-
-    return condition
-
-
-def all_clear(text):
-    if not text:
-        return False
-    # pattern = r'не\s+на\s+Сум(?:и|ах|ам)?'
-    pattern1 = r'\bне\s+(?:на\s+)?Сум(?:и|ах|ам)?\b'
-    condition1 = bool(re.search(pattern1, text, re.I))
-
-    pattern2 = r'\b(впали|впав|впала|впало)\b'
-    condition2 = bool(re.search(pattern2, text, re.I))
-
-    return condition1 or condition2
-
-
-def find_keywords(text):
-    not_sum = not_sumy(text)
-
-    if not text or not_sum:
-        return False
-
-    kab = r'\bКАБ(?:и|ів|ами|ах|ам|ом)?\b'
-    sumy = r'\bСум(?:и|ам|ами|ах)?\b'
-    ballistic = r'\bбаліст\w*'
-
-    # Використовуємо re.IGNORECASE (re.I), щоб не зважати на великі/малі літери
-    condition_1 = bool(re.search(kab, text, re.I)
-                       and re.search(sumy, text, re.I))
-    condition_2 = bool(re.search(ballistic, text, re.I)
-                       and re.search(sumy, text, re.I))
-
-    return condition_1 or condition_2
-
+# Глобальна змінна кількості загроз за сесію
+danger_count = 1
 
 # Ініціалізація клієнта
-client = TelegramClient('session_name', API_ID, API_HASH)
+client = TelegramClient('hub_app_session', API_ID, API_HASH)
 
 
 @client.on(events.NewMessage(chats=TARGET_CHANNEL))
 async def handle_new_message(event):
     global last_danger_time
+    global danger_count
 
     # # 2. Перевести в місцевий часовий пояс вашої системи
     msg_time = event.date.astimezone()
@@ -96,7 +56,8 @@ async def handle_new_message(event):
     # Якщо знайшли хоча б одне слово
     if found_keywords:
         # winsound.Beep(1000, 5000)
-        print(f"Час відправки: {formatted_date}")
+        print(
+            f"Загрозливе сповіщення #{danger_count}. Час відправки: {formatted_date}")
 
         matched_str = ", ".join(found_keywords)
         print(f"Знайдено ключові слова: {matched_str}")
@@ -123,6 +84,8 @@ async def handle_new_message(event):
             "text": text
         }
         save_to_jsonl(alert_data)
+
+        danger_count += 1
 
         is_danger = find_keywords(text)
         is_clear = all_clear(text)
@@ -157,8 +120,8 @@ async def handle_new_message(event):
 # 3. Правильний запуск клієнта через контекстний менеджер
 if __name__ == '__main__':
     print("Бот запущений, слухає нові повідомлення...")
-    try:
-        with client:
-            client.run_until_disconnected()
-    except KeyboardInterrupt:
-        print("\n[!] Роботу програми зупинено користувачем.")
+
+    with client:
+        client.run_until_disconnected()
+
+    print("\n[!] Роботу програми зупинено користувачем.")
