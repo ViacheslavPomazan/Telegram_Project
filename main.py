@@ -3,6 +3,7 @@ import winsound
 import re
 import time
 from datetime import datetime, timedelta
+from loading import save_to_jsonl
 
 # 1. Дані авторизації (з my.telegram.org)
 API_ID = 1111111  # Замініть на ваш цілочисельний API ID
@@ -113,6 +114,15 @@ async def handle_new_message(event):
 
         # Сповіщення надсилається у ваші "Збережені повідомлення" (Saved Messages)
         await client.send_message('me', notification)
+
+        alert_data = {
+            # Прибираємо tzinfo для класичного DATETIME в MySQL,
+            "timestamp": msg_time.replace(tzinfo=None),
+            "type": "DANGER",
+            "chat": event.chat.title if event.chat else "Unknown",
+            "text": text
+        }
+        save_to_jsonl(alert_data)
 
         is_danger = find_keywords(text)
         is_clear = all_clear(text)
