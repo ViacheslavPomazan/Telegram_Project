@@ -8,14 +8,14 @@ from search import *
 
 # 1. Дані авторизації (з my.telegram.org)
 API_ID = 11111111  # Замініть на ваш цілочисельний API ID
-API_HASH = '<your hash>'
+API_HASH = '# <your hash>'
 
 # 2. Налаштування відстеження
 # Можна вказати @username (рядок) або ID каналу (число int)
 TARGET_CHANNEL = '@sumygo'
 
 # Список ключових слів (пишемо в нижньому регістрі для зручності)
-KEYWORDS = ['каб', 'сум', 'баліст']
+KEYWORDS = ['каб', 'сум', 'баліст', 'впал']
 
 # Глобальна змінна для збереження часу останньої загрози
 last_danger_time = None
@@ -57,7 +57,7 @@ async def handle_new_message(event):
     if found_keywords:
         # winsound.Beep(1000, 5000)
         print(
-            f"Загрозливе сповіщення #{danger_count}. Час відправки: {formatted_date}")
+            f"Сповіщення #{danger_count}. Час відправки: {formatted_date}")
 
         matched_str = ", ".join(found_keywords)
         print(f"Знайдено ключові слова: {matched_str}")
@@ -77,9 +77,9 @@ async def handle_new_message(event):
         await client.send_message('me', notification)
 
         alert_data = {
-            # Прибираємо tzinfo для класичного DATETIME в MySQL,
-            "timestamp": msg_time.replace(tzinfo=None),
-            "type": "DANGER",
+            # Прибираємо tzinfo для класичного DATETIME в MySQL, для json - рядок
+            "timestamp": msg_time.strftime("%Y-%m-%d %H:%M:%S"),
+            "type": "MESSAGE",
             "chat": event.chat.title if event.chat else "Unknown",
             "text": text
         }
