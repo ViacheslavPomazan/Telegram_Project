@@ -43,3 +43,7 @@ def find_keywords(text):
                        and re.search(sumy, text, re.I))
 
     return condition_1 or condition_2
+
+
+def clean_text(text):
+    return re.sub(r'\[SUMY GO\].*$', '', text, flags=re.DOTALL).strip()
