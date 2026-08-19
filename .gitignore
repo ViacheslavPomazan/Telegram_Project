@@ -1,1 +1,10 @@
-hub_app_session.session
+# Файли сесій Telegram (безпека)
+*.session
+*.session-journal
+
+# Локальні файли логів та даних
+alerts_log.jsonl
+
+# Системні папки Python
+__pycache__/
+.env
