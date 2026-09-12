@@ -20,7 +20,7 @@ class Alert:
             self.message_time.replace(tzinfo=None),
             self.alert_type,
             self.chat_title,
-            self.message_text,
+            self.message_text,  # message_text потрібний також для функцій, тому 3 рази
             self.message_text,
             self.message_text,
             self.keywords
@@ -38,7 +38,7 @@ class AlertSessionManager:
         self.db_config = db_config
         # Масив (список) для об'єктів сесії
         self.session_storage: list[Alert] = []
-        self.d_count: int = 0
+        self.d_count: int = 0  # лічильник сповіщень
 
     def add_alert(self, alert: Alert) -> None:
         """Додає об'єкт Alert до поточного масиву сесії."""
@@ -50,12 +50,7 @@ class AlertSessionManager:
         """Пакетний експорт накопичених даних у MySQL (Batch Insert)."""
         if not self.session_storage:
             print("ℹ️ Сесія порожня. Немає даних для запису в БД.")
-            return 0
-
-        # query = """
-        #     INSERT INTO alerts (message_time, alert_type, chat_title, message_text, keywords)
-        #     VALUES (%s, %s, %s, %s, %s)
-        # """
+            return 0   # для порожньої сесії повертає 0
 
         query = """
             INSERT INTO alerts (
@@ -69,9 +64,9 @@ class AlertSessionManager:
             VALUES (
                 %s, 
                 %s, 
-                DefineChannel(%s), 
-                DefineTemplate(%s), 
-                IF(DefineTemplate(%s) IS NULL, %s, NULL), 
+                DefineChannel(%s), -- користувацька функція зі schema.sql, яка по назві каналу записує відповідний id
+                DefineTemplate(%s), -- функція зі schema.sql, яка шукає шаблонні повідомлення і записує їхнє id
+                IF(DefineTemplate(%s) IS NULL, %s, NULL), -- якщо шаблон тексту не знайдено - записуємо текст
                 %s
             )
         """
@@ -81,7 +76,7 @@ class AlertSessionManager:
 
         try:
             print(
-                f"🔄 Починаємо запис {len(data_to_insert)} записів у MySQL...")
+                f"Починаємо запис {len(data_to_insert)} записів у MySQL...")
             connection = mysql.connector.connect(**self.db_config)
             cursor = connection.cursor()
 
@@ -89,10 +84,7 @@ class AlertSessionManager:
             cursor.executemany(query, data_to_insert)
             connection.commit()
 
-            print(f"✅ Успішно збережено {cursor.rowcount} записів у MySQL!")
-
-            # cursor.close()
-            # connection.close()
+            print(f"Успішно збережено {cursor.rowcount} записів у MySQL!")
 
             # Очищаємо сесійний масив після успішного збереження
             self.session_storage.clear()
@@ -102,7 +94,7 @@ class AlertSessionManager:
                 connection.rollback()
 
             print(f"❌ Помилка при збереженні в MySQL: {err}")
-            # Прокід інформує викликаючий код (main) про невдачу
+            # інформує викликаючий код (main) про невдачу
             raise
 
         finally:
