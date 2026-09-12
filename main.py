@@ -3,9 +3,9 @@ import winsound
 # import re
 import time
 from datetime import datetime, timedelta
-from loading import save_to_jsonl
-from search import *
-from db_manager import Alert, AlertSessionManager
+from source.loading import save_to_jsonl
+from source.search import *
+from source.db_manager import Alert, AlertSessionManager
 
 
 # 1. Дані авторизації (з my.telegram.org)
