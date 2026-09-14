@@ -69,24 +69,7 @@ CREATE TABLE `danger_degrees` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `old_alerts`
---
 
-DROP TABLE IF EXISTS `old_alerts`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `old_alerts` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `message_time` datetime DEFAULT NULL,
-  `alert_type` varchar(12) DEFAULT NULL,
-  `chat_title` varchar(32) DEFAULT NULL,
-  `message_text` varchar(128) DEFAULT NULL,
-  `keywords` varchar(128) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `templates`
