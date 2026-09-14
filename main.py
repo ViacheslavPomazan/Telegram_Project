@@ -7,8 +7,8 @@ from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
 from source.db_manager import Alert, AlertSessionManager
-from source.search import *
-from source.json_write_read import save_to_jsonl
+from source.search import *  # функції пошуку ключових слів і обробки тексту
+from source.loading import save_to_jsonl
 
 # 1. Дані авторизації
 load_dotenv()
