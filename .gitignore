@@ -8,3 +8,6 @@ alerts_log.jsonl
 # Системні папки Python
 __pycache__/
 .env
+
+# Віртуаьне оточення
+.venv/
